@@ -1,5 +1,5 @@
 // Bubble Check 離線小幫手：有網路時一律拿最新版；沒網路時用上次存下來的檔案打開
-const CACHE = 'bubblecheck-v1';
+const CACHE = 'bubblecheck-v2';
 const CORE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', (e) => {
@@ -15,6 +15,8 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
+  // 雲端同步的連線（Firestore）不經過這裡，也不存，避免卡住即時更新
+  if (/googleapis\.com$/.test(new URL(req.url).hostname)) return;
   e.respondWith(
     fetch(req)
       .then((res) => {
